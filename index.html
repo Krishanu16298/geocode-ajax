@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+        <style>
+            body{
+                text-align:center;
+            }
+        </style>
+    <title>Location App</title>
+</head>
+<body>
+    <div class="container">
+        <form id="locin" class="form-group">
+            <input type="text" id="address" class="form-control">
+            <button type="submit" class="btn btn-primary btn-block">submit</button>
+        </form>
+    </div>
+    <div class="container" id="locoutput">
+    </div>
+    <script>
+        // geocode();
+        var formin = document.getElementById('locin');
+        formin.addEventListener('submit',geocode);
+        function geocode(e){
+            e.preventDefault();
+            var loc = document.getElementById('address').value;
+            if(loc === ''){
+                alert('Field value cannot be Empty!!');
+            }
+            else{
+                var key = 'AIzaSyDafXfhXxKwU6_4Eq3qP-fDVXR8sGMwMfw';
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState == 4 && this.status == 200){
+                        var output = JSON.parse(this.response);
+                        var addressComponents = output.results[0].address_components;
+                        var out = '<ul class="list-group">';
+                        var lat = output.results[0].geometry.location.lat;
+                        var lng = output.results[0].geometry.location.lng;
+                        for(let i=0;i<addressComponents.length;i++){   
+                            out += `
+                                <li class="list-group-item"><strong>${addressComponents[i].types[0]}</strong> : ${addressComponents[i].long_name}</li>
+                            `;
+                            // console.log(addressComponents[i].types[0]);
+                        }
+                        out += '<li class="list-group-item bg-primary text-white"><strong>Lattitude</strong> :'+lat+' </li>';
+                        out += '<li class="list-group-item bg-primary text-white"><strong>Longitude</strong> :' + lng + ' </li></ul>';
+                        document.getElementById('locoutput').innerHTML = out;
+                    }
+                }
+                xhttp.open("GET", "https://maps.googleapis.com/maps/api/geocode/json?address="+loc+"&key="+key,true);
+                xhttp.send();
+            }
+        }
+    </script>
+</body>
+</html>
